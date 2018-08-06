@@ -1,0 +1,445 @@
+------------------------------------------------------------------------------
+
+  FM-7 EMULATOR XM7/XM7pure (V3.4L77SX / V2.9L77SX / V1.1L77SX)
+
+  ソースコード
+  for Win32
+  Copyright (C) 1999-2017 ＰＩ．
+  Copyright (C) 2001-2017 Ryu Takegami
+   ROMEO support code by usalin
+   line printer support code by Ben.JP
+   Bubble casette support code by Toma
+   Icon designed by TENMARU
+
+------------------------------------------------------------------------------
+
+□ソース公開にあたって
+
+  このアーカイブはFM-7エミュレータXM7/XM7pure(V3.4L77SX/V2.9L77SX/V1.1L77SX)の
+  全ソースコードです。
+
+  私は元々、ソースコード公開に余り積極的ではありません。ただ本ソフトについては
+  その性質上、実機・資料の入手が難しい過去の機種の、詳細なドキュメント・仕様書
+  となり得ますので、電子保存の意味でも公開すべきだと考えます。
+
+  またXM7/XM7pureの開発の過程で、M88をはじめとする多くのソフトウェアのソースを
+  参考にさせて頂きました。そのお礼という意味もあります。
+
+
+□使用規定（ライセンス）
+
+  アーカイブに含まれるファイル群は、一部の例外(後述)を除き、ＰＩ．および たけが
+  みりうが著作権を保有しています。
+
+  ソースファイルの一部、もしくは全部を再利用する場合は、次の規則に基づくもの
+  とします。この規定は過去のバージョンにさかのぼって適用されるものとします。
+
+  ・VMディレクトリ下のファイルを再利用する場合は、該当部分のソースおよびドキュ
+    メントにオリジナルの著作権表示を明記してください。また商用利用は禁止します。
+  ・それ以外の部分の再利用は自由です。ただし前項同様、商用利用は禁止します。
+
+  このアーカイブの再配布はできません。無断転載を禁じます。
+
+
+□使用規定に含まれない例外など
+
+  以下に示すファイルはFM音源エミュレータ"fmgen"を改変したものです。
+  オリジナルの著作権者はcisc氏です(cisc@retropc.net)。
+  この部分については前述の規定は適用されません。
+
+    vm\fmgen.cpp
+    vm\fmgen.h
+    vm\fmgeninl.h
+    vm\opna.cpp
+    vm\opna.h
+    vm\psg.cpp
+    vm\psg.h
+
+
+  以下に示すファイルはバブルカセットサポート用コードです。
+  XM7dashの開発者であるトマ氏(tomatoma@s54.xrea.com)の許可を得て、32KBバブルカ
+  セット専用に改変の上組み込んでいます。
+  この部分についてはXM7dashからの移植のため、前述の規定に従うこととなります。
+
+    vm\bubble.c
+    vm\bubble.h
+
+
+  以下に示すファイルはV1.1L77EXで採用したZ80コア「KMZ80」のコードです。
+　原作者であるMamiya氏(mamiya@proc.org.tohoku.ac.jp)がPDSと宣言しているので、そ
+  れに従うこととなります。(詳しくは kmz80.txt を参照してください)
+  この部分については前述の規定は適用されません。
+
+    vm\kmz80.c
+    vm\kmz80.h
+    vm\kmz80c.c
+    vm\kmz80t.c
+    vm\kmz80i.h
+
+
+  以下に示すファイルはV1.1L77EXで採用したZ80逆アセンブラのコードです。
+  オリジナルの著作権者はMarat Fayzullin氏(marat@komkon.org)です。
+  この部分については前述の規定は適用されません。
+
+    vm\disasm80.c
+
+
+  以下に示すファイルはプリンタサポート用コードおよびVisual C++ 2005/2008/
+  2010/2012用makefileです。
+  原作者であるBen.JP氏の許可を得て、改変の上組み込み/添付しています。
+  この部分についてはXM7LPからの移植のため、前述の規定に従うこととなります。
+
+    win32\w32_lpr.cpp
+    win32\w32_lpr.h
+    MS\makefile
+    MS\Win32\winres.h
+
+
+  以下に示すファイルはROMEOサポート用コードです。
+  原作者であるうさ氏(usalin@yahoo.co.jp)の許可を得て、改変の上組み込んでいま
+  す。
+  この部分については前述の規定は適用されません。
+
+    win32\juliet.cpp
+    win32\juliet.h
+    win32\romeo.h
+
+
+  以下に示すファイルはV3.4L51/V2.9L51/V1.1L51で新たに採用したアイコンです。
+  原作者である天丸氏(tenmaru-tenpulako@violet.plala.or.jp)の許可を得て、一部改
+  変の上組み込んでいます。
+  この部分については前述の規定は適用されません。
+
+    win32\resource\tenfm8.ico
+    win32\resource\tenfm7.ico
+    win32\resource\tenfm77.ico
+    win32\resource\ten77av.ico
+    win32\resource\ten40ex.ico
+    win32\resource\ten40sx.ico
+    win32\resource\ten40ex2.ico
+    win32\resource\app_5in.ico
+    win32\resource\app_2d5.ico
+    win32\resource\app_d775.ico
+    win32\resource\app_vfd5.ico
+    win32\resource\app_351.ico
+    win32\resource\app_2d1.ico
+    win32\resource\app_2dd1.ico
+    win32\resource\app_d771.ico
+    win32\resource\app_vfd1.ico
+    win32\resource\app_352.ico
+    win32\resource\app_2d2.ico
+    win32\resource\app_2dd2.ico
+    win32\resource\app_d772.ico
+    win32\resource\app_vfd2.ico
+    win32\resource\app_t77.ico
+    win32\resource\app_t771.ico
+
+
+□ディレクトリ
+
+  以下のようなディレクトリ構成になっています。これは便宜的なものです。
+
+    VM          仮想FM-7
+    Win32       I/O部(Win32)
+    Borland     Borlandコンパイラ向けmakefile
+    MS          Microsoftコンパイラ向けmakefile、代替ファイル
+    Tool        補助ツール
+
+
+□定義済みシンボル
+
+  以下のシンボルを全体で使っています。
+
+  _DEBUG    デバッグビルドします。assertによる自己診断を行います。
+  NDEBUG    リリースビルドします。通常はこちらを定義します。
+  _WIN32    Win32を宣言します。(コンパイラにより自動定義されます)
+  XM7_VER   バージョンを定義します。
+            バージョンに応じ、1から3の数値を定義します。
+  XM7PURE   XM7pureとしてビルドします。
+            これによりトマ氏による一部の拡張機能が無効になります。
+  MOUSE     マウスエミュレーション機能を有効にします。
+  MR2       MR2のI/O型RAMディスク機能を有効にします(XM7_VER=3時のみ有効)。
+  L4CARD    400ラインカードサポート機能を有効にします(XM7_VER=1時のみ有効)。
+  JSUB      日本語サブシステムサポート機能を有効にします(XM7_VER=1時のみ有効)。
+  BUBBLE    バブルカセットサポート機能を有効にします(XM7_VER=1時のみ有効)。
+  Z80CARD   Z80カードサポート機能を有効にします(XM7_VER=1時のみ有効)
+  LPRINT    プリンタサポート機能を有効にします。
+  RSC       RS-232Cサポート機能を有効にします。
+  ROMEO     ROMEOサポート機能を有効にします。
+  JASTSOUND ジャストサウンドエミュレーション機能を有効にします。
+            (同時に LPRINT を定義する必要があります。)
+  KBDPASTE  クリップボードの文字列を貼り付ける機能および、キー入力支援機能を有
+            効にします。
+
+  <参考>
+    実際の実行ファイルでは以下のシンボルを定義してコンパイルしています。
+      V1.1      : -DXM7_VER=1 -DMOUSE -DROMEO -DFDDSND -DMIDI -DRSC -DL4CARD
+                  -DJSUB -DBUBBLE -DZ80CARD -DKBDPASTE -DLPRINT -DJASTSOUND
+      V2        : -DXM7_VER=2 -DMOUSE -DROMEO -DFDDSND -DMIDI -DRSC -DKBDPASTE
+                  -DLPRINT -DJASTSOUND
+      V2-V2憑き : -DXM7_VER=2 -DMOUSE -DROMEO -DFDDSND -DMIDI -DRSC -DKBDPASTE                   -DLPRINT -DJASTSOUND -DFMTV151
+      V3        : -DXM7_VER=3 -DMOUSE -DROMEO -DFDDSND -DMIDI -DRSC -DMR2
+                   -DKBDPASTE -DLPRINT -DJASTSOUND
+      pure V1.1 : -DXM7_VER=1 -DXM7PURE -DMOUSE -DROMEO -DFDDSND -DMIDI -DRSC
+                  -DL4CARD -DJSUB -DZ80CARD -DLPRINT -DJASTSOUND
+      pure V2   : -DXM7_VER=2 -DXM7PURE -DMOUSE -DROMEO -DFDDSND -DMIDI -DRSC
+                  -DLPRINT -DJASTSOUND
+      pure V3   : -DXM7_VER=3 -DXM7PURE -DMOUSE -DROMEO -DFDDSND -DMIDI -DRSC
+                  -DMR2 -DLPRINT -DJASTSOUND
+
+
+  以下のシンボルはxm7.h内で宣言されています。
+
+  FALSE    0
+  TRUE     (!FALSE)
+  NULL     ((void)0)
+  ASSERT   _DEBUG定義時に、assertを有効にします。
+  FASTCALL レジスタ関数呼び出し規約を使います。
+  UNUSED   使用していない変数の警告表示を抑制するために使います。
+
+
+□ビルドの前に
+
+  XM7本体のビルドをする場合は、VMディレクトリとWIN32ディレクトリの内容を作業
+  ディレクトリにまとめてコピーしてください。次のようなツリーになります。
+
+  ------- 本体(VM及びWIN32の内容を1つにまとめたもの)
+      |
+      ------- resource (アイコンリソース/マニフェストファイル)
+
+  またアセンブラとしてNASM(Netwide Assembler)が必要です。無償配布されています
+  ので別途入手してください。バージョンは0.98を推奨しますが本文執筆時点での最新
+  の2.10.05でも問題ありません。
+  実際にリリース版XM7で使用しているNASM(0.98.08+towns05)は『頭脳圧搾工場 in 仙
+  台』さん(http://www.purose.net/befis/)で配布されています。トップページから、
+  「download」→「NASM for FM-TOWNS」と進んでください。
+  （間違っても「Hall of Fame」→「Inside TOWNS-OS」を見て「何やっとんじゃコラ」
+    とか言わないでくださいお願いします。）
+
+
+□ビルド(Borland C++ 5.5.1)
+
+  XM7はEmbarcaderoから無償配布されていたBorland C++ 5.5.1でビルドできます。
+  現在無償配布されているEmbarcadero C++ 7.20ではビルドできません。どうにかして
+  Borland C++ 5.5.1を入手してください。
+
+  Borland C++のVersion 5.5.1をセットアップし、さらに次の3点を設定しておきます。
+
+  (1)nasmw(nasm)にパスを通しておく。
+  (2)リンカのライブラリパスにlib\psdkを含める
+
+  次にBorlandディレクトリからmakefileをコピーします。ターゲットバージョンやサポ
+  ートする周辺機能、nasmのファイル名はmakefileの先頭で定義されていますので必要
+  があれば変更しておきます。
+
+  準備が出来たら、作業ディレクトリでmakeするとXM7.exeが生成されます。
+
+
+□ビルド(Visual C++ 2005/2008/2010/2012)
+
+  XM7はMicrosoftから販売・提供されているVisual C++ 2005以降でビルドできます。
+  ここでは無償で入手可能なVisual C++ 2010 Express Editionを例にして解説します。
+
+、Visual C++ 2010 Express Edition、Microsoft DirectX 9.0 SDK (October 2004)をセ
+  ットアップし、さらに次の3点を設定しておきます。
+
+  (1)nasmw(nasm),Visual C++にパスを通しておく。
+  (2)環境変数のインクルードパス、ライブラリパス、実行ファイルパスを設定しておく
+  (3)MSディレクトリ下のWin32ディレクトリ内にあるwinres.hを作業ディレクトリにコ
+     ピーしておく(有償版であるStandard Edition以上では必要ありませんが…)
+
+  次にMSディレクトリからmakefileをコピーします。ターゲットバージョンやサポート
+  する周辺機能、nasmのファイル名はmakefileの先頭で定義されていますので必要があ
+  れば変更しておきます。
+  準備が出来たら、作業ディレクトリでnmakeするとXM7.exeが生成されます。
+
+  なお、この方法でビルドした実行ファイルはBCCでビルドするより若干大きくなり、
+  Visual C++ 2005ではWindows98/2000以降、Visual C++ 2008ではWindows2000以降、
+  Visual C++ 2010ではWindowsXP以降でないと動かないため、再配布にはBCCでビルドし
+  たものより向いていません。
+  ＃Windows95はともかく、WindowsNT4.0は切り捨ててもかまわない気もしますが(苦笑)
+
+
+□ビルド(Visual C++ 旧バージョン)
+
+  まずNASMでアセンブルします。Borland C++とはコマンドラインが異なりますので注意
+  してください。
+
+  (V1をビルドする場合)
+   nasmw -d _WIN32 -d XM7_VER=1 -d L4CARD -d JSUB -f win32 cpu_x86.asm
+   nasmw -d _WIN32 -d XM7_VER=1 -d L4CARD -d JSUB -f win32 ddrend16.asm
+   nasmw -d _WIN32 -d XM7_VER=1 -d L4CARD -d JSUB -f win32 ddrend24.asm
+   nasmw -d _WIN32 -d XM7_VER=1 -d L4CARD -d JSUB -f win32 ddrend32.asm
+   nasmw -d _WIN32 -d XM7_VER=1 -d L4CARD -d JSUB -f win32 gdi_rend.asm
+   nasmw -d _WIN32 -d XM7_VER=1 -d L4CARD -d JSUB -f win32 l4_rend.asm
+   nasmw -d _WIN32 -d XM7_VER=1 -d L4CARD -d JSUB -f win32 vm_sub.asm
+   nasmw -d _WIN32 -d XM7_VER=1 -d L4CARD -d JSUB -f win32 w32_sub.asm
+
+  (V2をビルドする場合)
+   nasmw -d _WIN32 -d XM7_VER=2 -f win32 cpu_x86.asm
+   nasmw -d _WIN32 -d XM7_VER=2 -f win32 ddrend16.asm
+   nasmw -d _WIN32 -d XM7_VER=2 -f win32 ddrend24.asm
+   nasmw -d _WIN32 -d XM7_VER=2 -f win32 ddrend32.asm
+   nasmw -d _WIN32 -d XM7_VER=2 -f win32 gdi_rend.asm
+   nasmw -d _WIN32 -d XM7_VER=2 -f win32 l4_rend.asm
+   nasmw -d _WIN32 -d XM7_VER=2 -f win32 vm_sub.asm
+   nasmw -d _WIN32 -d XM7_VER=2 -f win32 w32_sub.asm
+
+  (V3をビルドする場合)
+   nasmw -d _WIN32 -d XM7_VER=3 -f win32 cpu_x86.asm
+   nasmw -d _WIN32 -d XM7_VER=3 -f win32 ddrend16.asm
+   nasmw -d _WIN32 -d XM7_VER=3 -f win32 ddrend24.asm
+   nasmw -d _WIN32 -d XM7_VER=3 -f win32 ddrend32.asm
+   nasmw -d _WIN32 -d XM7_VER=3 -f win32 gdi_rend.asm
+   nasmw -d _WIN32 -d XM7_VER=3 -f win32 l4_rend.asm
+   nasmw -d _WIN32 -d XM7_VER=3 -f win32 vm_sub.asm
+   nasmw -d _WIN32 -d XM7_VER=3 -f win32 w32_sub.asm
+
+  次にVisual C++のIDEを起動、アプリケーションウィザードで"Win32 Application"
+  初期設定は"空のプロジェクト"を選んでXM7のプロジェクトを作成します。
+
+  プロジェクト作成後、ワークディレクトリの.c、.cpp、.rcをすべてプロジェクトに
+  追加します。またnasmにより生成されたcpu_x86.obj, ddrend16.obj, ddrend24.obj,
+  ddrend32.obj, gdi_rend.obj, l4_rend.obj, vm_sub.obj, w32_sub.obj も追加しま
+  す。
+
+  あとはシンボルXM7_VERおよび必要なオプションシンボルを定義し、ビルドすればok
+  です。ライブラリは次のものをリンクする必要があると思われます。
+
+  kernel32.lib user32.lib gdi32.lib comctl32.lib comdlg32.lib shell32.lib
+  winmm.lib imm32.lib ddraw.lib dinput.lib dsound.lib dxguid.lib ole32.lib
+
+
+□補助ツール
+
+  ROM作成ツールSAVEROMシリーズは、FM-7シリーズ上で動作する部分(6809アセンブラで
+  記述)と、起動ディスクを作成する部分(8086アセンブラで記述)に分かれています。
+
+  6809アセンブラ部は次のツールで作成します。
+      HD63C09/6809 クロスアセンブラ AS63.EXE Version 1.20T
+  8086アセンブラ部は次のツールで作成します。
+      Netwide Assembler 0.98(Netwide Assembler 0.98.08+towns05)
+  テープ版・ダンプリスト版の生成には以下のツールが必要です。
+      FTOOLS (Apollo氏作)のFMWRITE.EXE/FMFSLIB.DLL
+
+  6809アセンブラ「AS63.EXE」 Version 1.20Tは『6809.net』さん(http://www.6809
+  .net/)で配布されています。「6x09リンク」の下のほうにリンクがあります。
+  8086アセンブラについてはXM7本体と同じNetwide Assemberを利用します。
+  FTOOLSはApollo氏のサイト(http://retropc.net/apollo/)で配布されています。
+
+  メイクはBorland C++に付属のmake.exeを使うと良いでしょう。正常にメイクされ
+  ると、以下のファイルが生成されます。
+
+    SAVEROM.COM/SAVEROM.BIN  (XM7 V2・FM77AVシリーズ全機種用 2D版)
+    SAVEROM2.COM/SAVEROM2.BIN(XM7 V3・FM77AV20/40/EX/SX用 2DD版)
+    SAVEROM7.COM/SAVEROM7.BIN(XM7 V1・FM-7シリーズ全機種用 3.5インチ2D版)
+    SAVEROM5.COM/SAVEROM5.BIN(XM7 V1・FM-7シリーズ全機種用 5インチ2D版)
+    SAVEROM8.COM/SAVEROM8.BIN(XM7 V1.1・FM-8用 5インチ2D版)
+    SAVEJDIC.COM/SAVEJDIC.BIN(XM7 V1.1・FM77-101用 2D版)
+    SAVEJDAV.COM/SAVEJDAV.BIN(XM7 V2・FM77-211用 2D版)
+    SAVEKNJ.COM/SAVEKNJ.BIN  (XM7 V1/V2/V3・FM77AV40EX/SX用 2DD版)
+    SAVER.D77 (各ツールの実機実行用ファイルが入ったディスクイメージ、2D版)
+
+  AS63のオプティマイズ機能を使い、6809のブランチはロングブランチ主体で記述
+  しています。アセンブル時にショートで届くものはショートに変換されます。
+
+
+□ソースコード ガイド
+
+  XM7のアーキテクチャ、プログラム構造を簡単に説明します。
+
+  XM7はVM(仮想マシン)と呼ぶ仮想FM-7部と、実際のI/Oエミュレーションを担当する
+  機種依存部であるWin32部の2つに分離されています。仮想FM-7の部分は移植性、汎
+  用性を高める方向で作ってありますので、他のCPU、OSへの移植は比較的容易です。
+  ただし、VM中の6809CPUコアについては性能向上のためx86アセンブラで記述していま
+  すので、他のCPUに移植する場合はCPUコアを別途準備する必要があります。
+
+
+  基本的なVMの使い方は次の通りです。
+
+  (1)初期化
+     ワークエリアを初期化し、ROMファイルをロードします。失敗するとFALSEを返し
+     ますので適切なエラー処理を行ってください。
+     #include "xm7.h"
+     ....
+     if (!system_init()) {
+       (エラー処理)
+     }
+
+  (2)リセット
+     VMの初期化が終わったら、リセットします。これは実機でのパワーオンリセット
+     に相当する処理です。
+     #include "xm7.h"
+     ....
+     system_reset();
+
+  (3)実行
+     VMはus単位の仮想時間を持っており、この時間に基づいてCPUやデバイスが動いて
+     いきます。つまりこの時間を進めるという操作が、実行にあたります。
+     実行するとメモリ、レジスタ等のワークエリアが変化し、後述するnotify系の関
+     数が必要に応じて呼び出されます。
+     #include "xm7.h"
+     ....
+     /* 1ms、VMを実行する例 */
+     DWORD us = 1000;
+     while (us > 0) {
+       us -= schedule_exec(us);
+     }
+
+  (4)終了
+     メモリの解放など、後片付けを行います。
+     #include "xm7.h"
+     ....
+     system_cleanup();
+
+  VMはROMファイル、ディスクイメージ(D77ファイル等)、XM7ファイル等のファイルI/O
+  が必要になると、device.hで宣言されているfile_系の関数を呼び出し、ファイルア
+  クセスを要求します。
+
+  またVRAM変更、パレット変更、FM音源(OPN)などへのレジスタ出力などが発生すると、
+  同じくdevice.hに宣言されているxxxxx_notify系の関数を呼び出します。プラットフ
+  ォーム側ではnotifyを受け、適宜処理を行います。
+
+  キーボード、ジョイスティックおよびマウスについては、VMに通知またはVMからの
+  データ要求に対してデータを引き渡す形になります。キーボードについてはkeyboa
+  rd_make、keyboard_breakの2つの関数でキーのMake/Breakを通知します。ジョイス
+  ティックはjoy_requestが、マウスはmospos_request/mosbtn_requestがVMから呼び
+  出されますので、プラットフォーム側でデータを作成、返します。
+
+  実際のエミュレータの実装では、リアルタイム処理を実現するためプラットフォーム
+  側の時間を計時し、それにContact information見合った時間だけVMを駆動することに
+  なります。駆動の合間でnotifyの処理、キーボードデータの通知などを行うことにな
+  ります。このため、別にスケジューラが必要となり、時間処理は2層構造となります。
+
+
+  Win32側ではw32_main.cで上に述べた初期化、リセット、終了処理を行っています。
+
+  スケジューラはw32_sch.cにあり、timeGetTime APIを用いて時間計測を行うとともに
+  時間オーバーの場合の処理や、描画・入力・波形合成などのサブモジュールの呼び出
+  しも行っています。
+
+  描画はw32_draw.cにあり、実際の処理はw32_gdi.cまたはw32_dd.cppに振り分けてい
+  ます。VRAMからビットイメージ、カラーを作る部分(レンダリング)はgdi_rend.asm、
+  ddrend*.asm、l4_rend.asmにありますが、基本的に同様のアルゴリズムを実装したも
+  のがVMのtool.cにBMPセーブ機能として実装してありますので、こちらも参考にしてく
+  ださい。
+
+  入力処理はw32_kbd.cppです。DirectInputおよび旧来のジョイスティックAPIを用いて
+  キーボード・ゲームコントローラ・マウスの取得を行い、上に述べたAPIを使ってVMと
+  通信しています。
+
+  波形合成はw32_snd.cppにあり、DirectSoundを使った音声出力を行っています。スト
+  リーミングは典型的なダブルバッファ処理を行い、標準設定では75msごとにバッファ
+  の半充填を行う仕様としています。
+
+
+□連絡先
+
+  ホームページ
+  http://xm7.la.coocan.jp/xm7/ (もう誰も見向きもしないXM7のぺーじ)
+
+  メールアドレス
+  ryu.takegami@mbg.nifty.com (個別に返信を出すことはあるかもしれません)
+
+  Twitter
+  http://twitter.com/RyuTakegami (XM7関連のツイートは滅多にしません)

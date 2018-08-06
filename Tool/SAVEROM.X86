@@ -1,0 +1,216 @@
+;
+; FM-7 EMULATOR "XM7"
+;
+; Copyright (C) 1999-2017 ＰＩ．(yasushi@tanaka.net)
+; Copyright (C) 2001-2017 Ryu Takegami
+;                         5inch 2D Support by Toshio Fukui
+;
+; [ ROMセーバ作成 ]
+;
+; RHG履歴
+;    2002.04.11	NASM用に書き直し
+;				WinNT系でコマンドラインの解析がうまくいかない問題を修正
+;				書き込みエラーメッセージが出ない問題を修正
+;	 2012.04.29	TABサイズを修正
+;
+
+			org		0100h
+
+;
+; プログラムスタート
+;
+START:
+			cld
+			mov		ax,cs
+			mov		ds,ax
+			mov		es,ax
+			mov		ss,ax
+			xor		sp,sp
+			mov		dx,TITLE_MSG
+			call	PRINT
+			call	CMDLINE
+			call	DISKGEO
+			call	READ
+			call	WRITE
+			mov		dx,COMPLETE_MSG
+			call	PRINT
+			mov		ax,4C00h
+			int		21h
+
+;
+; コマンドライン処理
+;
+CMDLINE:
+			mov		si,0080h
+			lodsb
+			or		al,al
+			jz		CMDLINE_ERROR
+CMDLINE_LOOP:
+			lodsb
+			cmp		al,20h
+			je		CMDLINE_LOOP
+			cmp		al,'A'
+			jc		CMDLINE_ERROR
+			cmp		al,'Z'+1
+			jc		CMDLINE_OK
+			cmp		al,'a'
+			jc		CMDLINE_ERROR
+			cmp		al,'z'+1
+			jnc		CMDLINE_ERROR
+CMDLINE_OK:
+			or		al,20h
+			mov		byte [DRIVE],al
+			ret
+CMDLINE_ERROR:
+			mov		dx,CMDLINE_MSG
+			jmp		ERROR
+
+;
+; ディスクジオメトリ チェック
+;
+DISKGEO:
+			mov		dl,byte [DRIVE]
+			sub		dl,60h
+			mov		ah,36h
+			int		21h
+			cmp		ax,0002h
+			jnz		DISKGEO_ERROR
+			cmp		cx,512
+			jnz		DISKGEO_ERROR
+	%if	(DISKTYPE==0)
+			cmp		dx,354
+			jz		DISKGEO_OK
+	%endif
+			cmp		dx,713
+			jnz		DISKGEO_ERROR
+DISKGEO_OK:	ret
+DISKGEO_ERROR:
+			mov		dx,DISKGEO_MSG
+			jmp		ERROR
+
+;
+; ファイル読み込み
+;
+READ:
+			mov		dx,FILENAME
+			mov		ax,3D00h
+			int		21h
+			jc		READ_ERROR
+			mov		bx,ax
+			push	ax
+			mov		dx,BUFFER
+			mov		cx,4608
+			mov		ah,3Fh
+			int		21h
+			pop		bx
+			mov		ah,3Eh
+			int		21h
+			ret
+READ_ERROR:
+			mov		dx,READ_MSG
+			jmp		ERROR
+
+;
+; ディスク書き込み
+;
+WRITE:
+			mov		cx,0009h
+			mov		dx,0000h
+			mov		bx,BUFFER
+			mov		al,byte [DRIVE]
+			sub		al,'a'
+			int		26h
+			jc		WRITE_ERROR
+			add		sp,2
+			ret
+WRITE_ERROR:
+			mov		dx,WRITE_MSG
+			jmp		ERROR
+
+;
+; 文字列表示
+;
+PRINT:
+			mov		ah,09h
+			int		21h
+			ret
+
+;
+; エラー処理
+;
+ERROR:
+			call	PRINT
+			mov		ax,4C01h
+			int		21h
+
+;
+; 文字列データ
+;
+		%if	(MODEL==2)
+FILENAME	db		'SAVEROM2.BIN',0
+TITLE_MSG	db		'ROM-SAVER Utility for XM7 V3 (v2.37)',13,10,'$'
+CMDLINE_MSG	db		'Usage:SAVEROM2 <DRIVE>',13,10
+			db		'Ex)SAVEROM2 A '
+		%elif	(MODEL==7)&&(DISKTYPE!=0)
+FILENAME	db		'SAVEROM7.BIN',0
+TITLE_MSG	db		'ROM-SAVER Utility for XM7 V1 (v1.37)',13,10,'$'
+CMDLINE_MSG	db		'Usage:SAVEROM7 <DRIVE>',13,10
+			db		'Ex)SAVEROM7 A '
+		%elif	(MODEL==7)&&(DISKTYPE==0)
+FILENAME	db		'SAVEROM5.BIN',0
+TITLE_MSG	db		'5inch 2D ROM-SAVER Utility for XM7 V1 (v1.37)',13,10,'$'
+CMDLINE_MSG	db		'Usage:SAVEROM5 <DRIVE>',13,10
+			db		'Ex)SAVEROM5 A '
+		%elif	(MODEL==3)
+FILENAME	db		'SAVEJDIC.BIN',0
+TITLE_MSG	db		'DICTIONARY ROM-SAVER Utility for XM7 V1 (v1.04)',13,10,'$'
+CMDLINE_MSG	db		'Usage:SAVEJDIC <DRIVE>',13,10
+			db		'Ex)SAVEJDIC A '
+		%elif	(MODEL==4)
+FILENAME	db		'SAVEKNJ.BIN',0
+TITLE_MSG	db		'JIS78 KANJI ROM-SAVER Utility for XM7 V3 (v1.37)',13,10,'$'
+CMDLINE_MSG	db		'Usage:SAVEKNJ <DRIVE>',13,10
+			db		'Ex)SAVEKNJ A '
+		%elif	(MODEL==5)
+FILENAME	db		'SAVEJDAV.BIN',0
+TITLE_MSG	db		'DICTIONARY ROM-SAVER Utility for XM7 V2 (v1.00)',13,10,'$'
+CMDLINE_MSG	db		'Usage:SAVEJDAV <DRIVE>',13,10
+			db		'Ex)SAVEJDAV A '
+		%elif	(MODEL==8)
+FILENAME	db		'SAVEROM8.BIN',0
+TITLE_MSG	db		'MICRO 8 ROM-SAVER Utility for XM7 V1.1 (v1.37)',13,10,'$'
+CMDLINE_MSG	db		'Usage:SAVEROM8 <DRIVE>',13,10
+			db		'Ex)SAVEROM8 A '
+		%else
+FILENAME	db		'SAVEROM.BIN',0
+TITLE_MSG	db		'ROM-SAVER Utility for XM7 V2 (v1.37)',13,10,'$'
+CMDLINE_MSG	db		'Usage:SAVEROM <DRIVE>',13,10
+			db		'Ex)SAVEROM A '
+		%endif
+		%if	(DISKTYPE==0)
+			db		'(A: is 360KB FLOPPY)',13,10,'$'
+DISKGEO_MSG	db		'Media is not 360KB format',13,10,'$'
+		%else
+			db		'(A: is 1.44MB/720KB FLOPPY)',13,10,'$'
+DISKGEO_MSG	db		'Media is not 720KB format',13,10,'$'
+		%endif
+READ_MSG	db		'File not found',13,10,'$'
+WRITE_MSG	db		'Write error',13,10,'$'
+COMPLETE_MSG	db	'Completed',13,10,'$'
+
+;
+; ドライブレター
+;
+DRIVE:
+			db		0
+
+;
+; バッファ
+;
+BUFFER:
+;			resb	4608
+
+;
+; プログラム終了
+;
+			end
