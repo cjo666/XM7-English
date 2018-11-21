@@ -11,7 +11,7 @@
 #
 # 環境定義
 #
-LIBPATH		= "D:\\Dev\\XM7 Source\\Build\\sdk-directx9\\Lib"
+LIBPATH		= ".\\sdk-directx9\\Lib"
 			# ご自身の環境に合わせて変更してください。
 
 #
@@ -28,7 +28,7 @@ OPTION		= -DMOUSE -DMR2 -DROMEO -DMIDI -DFDDSND -DRSC -DKBDPASTE -DLPRINT -DJAST
 # ツール定義
 #
 #AS			= nasmw
-AS			= nasm	
+AS			= ".\\nasm\\nasm"	
 # nasmw 0.98 が調達できず、NASM 2.x で代用する場合
 AFLAGS		= -d _WIN32 -f win32
 ASMVER		= -d XM7_VER=$(XM7_VER) $(OPTION)
@@ -48,6 +48,8 @@ RCVER		= -dXM7_VER=$(XM7_VER) $(OPTION)
 # ファイル定義
 #
 TARGET		= XM7.exe
+
+
 
 ASM_SRCS	= \
 		cpu_x86.asm \
